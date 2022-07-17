@@ -1,0 +1,91 @@
+version: '3.5'
+x-airflow-common:
+  &airflow-common
+#  image: apache/airflow:latest
+  build: .
+  environment:
+    &airflow-common-env
+    ME_CONFIG_MONGODB_SERVER: mongo.stagingDB
+    INTEGRATION_MONGO: 'true'
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW_CONN_AWS_DEFAULT: aws://?profile=airflow-spark1&s3_config_file=/opt/airflow/creds/s3&s3_config_format=aws
+    AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: 50000
+    AIRFLOW_CONN_MONGO_DEFAULT: mongodb://admin:admin@127.0.0.1:27017/?authSource=admin
+    _PIP_ADDITIONAL_REQUIREMENTS: ''
+    AIRFLOW__API__AUTH_BACKEND: airflow.api.auth.backend.basic_auth
+  volumes:
+    - ./creds:/opt/airflow/creds
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+    - ./airflow.cfg:/opt/airlfow/airflow.cfg
+    - ./src:/opt/airflow/src
+    - ./dbt:/opt/airflow/dbt
+  user: "0:0"
+  command: -c "pip3 install apache-airflow-providers-mongo==1.0.0b1 --user"
+  depends_on:
+    - postgres
+    - mongo
+  links:
+    - mongo
+
+services:
+  mongo:
+    image: mongo
+    container_name: 'mongo'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
+      interval: 10s
+      timeout: 60s
+      retries: 5
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always
+    depends_on:
+      - airflow-webserver
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    depends_on:
+      - airflow-webserver
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}

@@ -1,0 +1,28 @@
+{
+    "mongo_credentials": {
+        "database": "school",
+        "mongo_password": "admin",
+        "mongo_port": 27017,
+        "mongo_uri": "mongo",
+        "mongo_username": "admin",
+        "mongo_auth_source": "admin"
+    },
+    "snowflake_credentials": {
+        "user_login_name": "",
+        "password": "",
+        "account_identifier":"",
+        "database_name": "",
+        "schema_name": "",
+        "warehouse_name": "",
+        "role_name": ""
+    },
+    "airflow_config": {
+        "version": "V0.1.0.",
+        "timeZone": "Africa/Tunis",
+        "scudeling": {
+            "cmf_schedule_interval_src_staging": "0 1 * * 2-6"
+        }
+    },
+    "DBT_DIR" : "/opt/airflow/dbt",
+    "GLOBAL_CLI_FLAGS" : "--profiles-dir"
+}

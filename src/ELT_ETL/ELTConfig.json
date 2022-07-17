@@ -1,0 +1,11 @@
+{
+
+  "URL_SOURCE":  "https://opendata.paris.fr/api/records/1.0/search/",
+  "PARAMS": {
+    "dataset": "etablissements-scolaires-colleges",
+    "rows": "100",
+    "facet":["annee_scol","arr_libelle","arr_insee","id_projet"]
+
+  }
+
+}
