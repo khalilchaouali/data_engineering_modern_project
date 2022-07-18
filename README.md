@@ -162,7 +162,7 @@ Let's start:
 
 6- check your snowflake update.
 
-![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airflow.png)
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/snowflake.png)
 
 7- open your dashboard.
 ![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/dashboard.png)
