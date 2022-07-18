@@ -80,27 +80,32 @@ docker pull airbyte/source-mongodb-v2:0.1.15
 ```
 
 
-#### Environment Variables
+#### Config and Variables
 
 - Signup with Snowflake (Free trial).
 
-- We need to add the following environment variables to your .env file.
+- We need to add the snowflake credentials to dbt profiles.yml file
 
-Snowflake:
+Snowflake exemple:
 
 `SNOWFLAKE_ACCOUNT=lv44893.europe-west4.gcp`
 
-`SNOWFLAKE_WAREHOUSE=AIRBYTE_WAREHOUSE`
+ `account: lv44893.europe-west4.gcp`
 
-`SNOWFLAKE_DATABASE=AIRBYTE_DATABASE`
-
-`SNOWFLAKE_SCHEMA=SCHOOL`
-
-`SNOWFLAKE_USERNAME=AIRBYTE_USER`
-
-`SNOWFLAKE_PASSWORD=password`
-
-`SNOWFLAKE_ROLE=AIRBYTE_ROLE`
+ `# User/password auth`
+ 
+ 
+ `user: AIRBYTE_USER`
+ 
+ `password: password`
+ 
+ `role: AIRBYTE_ROLE`
+ 
+ `database: AIRBYTE_DATABASE`
+ 
+ `warehouse: AIRBYTE_WAREHOUSE`
+ 
+ `schema: SCHOOL`
 
 #### Run Locally
 
@@ -136,7 +141,33 @@ In your browser:
 Run `./setup.sh down` to stop the Docker containers.
 
 
+## Demo
+Let's start:
 
+1 -Go to http://localhost:8000/ 
 
+2- Create connection between source(Mongo) and Destination(Snowflake), fiannly get the conn_id from the link path in our case is *a1a4d9a8-3315-479b-84c6-306e994bb615*
 
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airbyte_interface.png)
+
+3- Go to http://localhost:8080/ set in variable section the conn_id [here](http://127.0.0.1:8080/variable/list/).
+
+![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+
+4- Set connection with snowflake using in the admin tab [here](http://127.0.0.1:8080/connection/list/)
+
+5- trigger your task manualy to see you result with the scudeling but it's scheduled @daily in our work. besides, monitor your jobs status.
+
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airflow.png)
+
+6- check your snowflake update.
+
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airflow.png)
+
+7- open your dashboard.
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/dashboard.png)
+
+View [Dashboard](https://datastudio.google.com/reporting/b77d69fd-552d-43b7-a0ba-165329766245/page/Xg0xC)
+
+IT'S WORKS!
 
