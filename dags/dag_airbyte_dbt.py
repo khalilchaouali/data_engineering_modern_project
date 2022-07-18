@@ -12,7 +12,7 @@ airbyte_connection_id = Variable.get("AIRBYTE_CONNECTION_ID")
 dbtConfig = get_config_json('globals', 'config')
 with DAG(dag_id='trigger_airbyte_dbt_job',
          default_args={'owner': 'airflow'},
-         schedule_interval='@yearly',
+         schedule_interval='@daily',
          start_date=days_ago(1),
          render_template_as_native_obj=True
          ) as dag:
