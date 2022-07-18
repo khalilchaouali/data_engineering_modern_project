@@ -63,10 +63,80 @@ Docker : [Docker Documentation Link](https://docs.docker.com/)
 
 ## Config and run project
 
+To run this project we need to Setup the followeng sections.
+
  #### Requirements:
-To run this project we need:
+ 
 -Install docker and docker compose.
+
 -pull the images of mongo source connector and snowflake destination connector via:
+
+```bash
+docker pull airbyte/destination-snowflake:0.4.31
+```
+
+```bash
 docker pull airbyte/source-mongodb-v2:0.1.15
-docker pull 
+```
+
+
+#### Environment Variables
+
+- Signup with Snowflake (Free trial).
+
+- We need to add the following environment variables to your .env file.
+
+Snowflake:
+
+`SNOWFLAKE_ACCOUNT=lv44893.europe-west4.gcp`
+
+`SNOWFLAKE_WAREHOUSE=AIRBYTE_WAREHOUSE`
+
+`SNOWFLAKE_DATABASE=AIRBYTE_DATABASE`
+
+`SNOWFLAKE_SCHEMA=SCHOOL`
+
+`SNOWFLAKE_USERNAME=AIRBYTE_USER`
+
+`SNOWFLAKE_PASSWORD=password`
+
+`SNOWFLAKE_ROLE=AIRBYTE_ROLE`
+
+#### Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/khalilchaouali/data_engineering_modern_project
+```
+
+Go to the project directory
+
+```bash
+  cd my-project
+```
+
+Run the whole data stack using ./tools/start.sh. This will install local requirements (PyYAML) and run everything though Docker. The script will exit when complete, but the Docker containers will remain running.
+
+```bash
+  ./setup.sh up
+```
+In your browser:
+
+- Visit http://localhost:8080/ to see the Airflow UI (user: `airflow`, password: `airflow`) and to see your DAG.
+- Visit http://localhost:8000/ to see the Airbyte UI and your completed Sync.
+- Visit your local MongoDB database (`localhost:5432`) with the `username=admin` and `password=admin` to see the staged and transformed data.
+
+- Visit your Snowflake account to see the structered tabels and views.
+
+-Without all of them you can check you dashboard via this link [Google Data Studio dashboard](https://datastudio.google.com/reporting/b77d69fd-552d-43b7-a0ba-165329766245/page/Xg0xC)
+
+**Shut it down**
+
+Run `./setup.sh down` to stop the Docker containers.
+
+
+
+
+
 
