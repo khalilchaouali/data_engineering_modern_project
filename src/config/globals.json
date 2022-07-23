@@ -11,7 +11,7 @@
         "version": "V0.1.0.",
         "timeZone": "Africa/Tunis",
         "scudeling": {
-            "cmf_schedule_interval_src_staging": "0 1 * * 2-6"
+            "school_schedule_interval_src_staging": "0 1 * * 2-6"
         }
     },
     "DBT_DIR" : "/opt/airflow/dbt",
