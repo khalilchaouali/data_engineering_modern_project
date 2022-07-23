@@ -222,9 +222,6 @@ my-snowflake-db:
 
 -Without all of them you can check you dashboard via this link [Google Data Studio dashboard](https://datastudio.google.com/reporting/b77d69fd-552d-43b7-a0ba-165329766245/page/Xg0xC)
 
-**Shut it down**
-
-Run `./setup.sh down` to stop the Docker containers.
 
 
 ## Demo
@@ -236,6 +233,7 @@ Let's start:
 
 ![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airbyte_interface.png)
 
+3- Rin the command below and then enter the copied conn id and automatically will be add it to airflow
 ```bash
   echo "Access Airbyte at http://localhost:8000 and set up a connection."
   echo "Enter your Airbyte connection ID: "
@@ -243,25 +241,30 @@ Let's start:
   # Set connection ID for DAG.
   docker-compose -f docker-compose-airflow.yaml --env-file ./.env.airflow run airflow-webserver airflow variables set 'AIRBYTE_CONNECTION_ID' "$connection_id"
 ```
-3- Go to  [http://127.0.0.1:8080/variable/list/](http://127.0.0.1:8080/variable/list/) to check our variable
+4- Go to  [http://127.0.0.1:8080/variable/list/](http://127.0.0.1:8080/variable/list/) to check our variable
 
-![App Screenshot](https://github.com/khalilchaouali/blob/main/image/variableList.png)
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/variableList.png)
 
-4- gto to this link  [http://127.0.0.1:8080/connection/list/](http://127.0.0.1:8080/connection/list/) to check our connection with snowflake
-![App Screenshot](https://github.com/khalilchaouali/blob/main/image/connectionList.png)
+4- Go to this link  [http://127.0.0.1:8080/connection/list/](http://127.0.0.1:8080/connection/list/) to check our connection with snowflake
+5[App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/connectionList.png)
 
-5- trigger your task manualy to see you result with the scudeling but it's scheduled @daily in our work. besides, monitor your jobs status.
+6- trigger your task manualy to see you result with the scudeling but it's scheduled @daily in our work. besides, monitor your jobs status.
 
 ![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airflow.png)
 
-6- check your snowflake update.
+7- check your snowflake update.
 
 ![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/snowflake.png)
 
-7- open your dashboard.
+8- open your dashboard.
 ![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/dashboard.png)
 
 View [Dashboard](https://datastudio.google.com/reporting/b77d69fd-552d-43b7-a0ba-165329766245/page/Xg0xC)
 
 IT'S WORKS!
+
+**Shut it down**
+
+Run `./setup.sh down` to stop the Docker containers.
+
 
