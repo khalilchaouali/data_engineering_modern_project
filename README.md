@@ -69,6 +69,31 @@ To run this project we need to Setup the followeng sections.
  
 - Install docker and docker compose.
 
+#### Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/khalilchaouali/data_engineering_modern_project
+```
+
+Go to the project directory
+
+```bash
+  cd data_engineering_modern_project
+```
+
+Run the whole data stack using ./setup.sh up. This will install local requirements (PyYAML) and run everything though Docker. The script will exit when complete, but the Docker containers will remain running.
+
+```bash
+  ./setup.sh up
+```
+In your browser:
+
+- Visit http://localhost:8080/ to see the Airflow UI (user: `airflow`, password: `airflow`) and to see your DAG.
+- Visit http://localhost:8000/ to see the Airbyte UI and your completed Sync.
+- Your local MongoDB database (`localhost:2717`) with the `username=admin` and `password=admin` to see the staged and transformed data.
+
 - Configure mongo permissions, install mongo and snowflake connectors images for airbyte, and create mongo database via:
 
 ```bash
@@ -78,8 +103,12 @@ To run this project we need to Setup the followeng sections.
 #### Config and Variables
 
 - Signup with Snowflake (Free trial).
+
 - Create a new worksheet
-- copy and past the following sql request, then select all the code and finally click on the run buttom: 
+
+- To create a database inside snowflake copy and past the following sql request, then select all the code and finally click on the run buttom: 
+
+![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/snowflake_run.png)
 
  ``` sql
 -- set variables (these need to be uppercase)
@@ -151,7 +180,14 @@ To run this project we need to Setup the followeng sections.
 
  commit;
  ```
-- create a profiles.yml file inside dbt directory then past the following code by changing the account value by your snowflake account id:
+- create a profiles.yml file inside `data_engineering_modern_project/dbt` directory then past the following code by changing the account value by your snowflake account id:
+
+You can get the accountID from the snowflake home link 
+for this exemple:
+
+https://app.snowflake.com/europe-west4.gcp/sd5454/worksheets
+
+account: sd5454.europe-west4.gcp
 
 ```yml
 my-snowflake-db:
@@ -159,19 +195,22 @@ my-snowflake-db:
   outputs:
     dev:
       type: snowflake
-      account: [account id]
+      account: xxx.xxx.xxx
 
       # User/password auth
-      user: [username]
-      password: [password]
+      user: AIRBYTE_USER
 
-      role: [user role]
-      database: [database name]
-      warehouse: [warehouse name]
-      schema: [dbt schema]
+      password: password
+
+      role: AIRBYTE_ROLE
+
+      database: AIRBYTE_DATABASE
+
+      warehouse: AIRBYTE_WAREHOUSE
+
+      schema: SCHOOL
       threads: 1
       client_session_keep_alive: False
-      query_tag: [anything]
 
       # optional
       connect_retries: 0 # default 0
@@ -179,53 +218,7 @@ my-snowflake-db:
       retry_on_database_errors: False # default: false 
       retry_all: False  # default: false
 ```
-Snowflake exemple:
 
-`SNOWFLAKE_ACCOUNT=xxx.xxx.gcp`
-
- `account: lv44893.europe-west4.gcp`
-
- `# User/password auth`
- 
- 
- `user: AIRBYTE_USER`
- 
- `password: password`
- 
- `role: AIRBYTE_ROLE`
- 
- `database: AIRBYTE_DATABASE`
- 
- `warehouse: AIRBYTE_WAREHOUSE`
- 
- `schema: SCHOOL`
-
-#### Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/khalilchaouali/data_engineering_modern_project
-```
-
-Go to the project directory
-
-```bash
-  cd my-project
-```
-
-Run the whole data stack using ./tools/start.sh. This will install local requirements (PyYAML) and run everything though Docker. The script will exit when complete, but the Docker containers will remain running.
-
-```bash
-  ./setup.sh up
-```
-In your browser:
-
-- Visit http://localhost:8080/ to see the Airflow UI (user: `airflow`, password: `airflow`) and to see your DAG.
-- Visit http://localhost:8000/ to see the Airbyte UI and your completed Sync.
-- Visit your local MongoDB database (`localhost:5432`) with the `username=admin` and `password=admin` to see the staged and transformed data.
-
-- Visit your Snowflake account to see the structered tabels and views.
 
 -Without all of them you can check you dashboard via this link [Google Data Studio dashboard](https://datastudio.google.com/reporting/b77d69fd-552d-43b7-a0ba-165329766245/page/Xg0xC)
 
@@ -239,15 +232,23 @@ Let's start:
 
 1 -Go to http://localhost:8000/ 
 
-2- Create connection between source(Mongo) and Destination(Snowflake), fiannly get the conn_id from the link path in our case is *a1a4d9a8-3315-479b-84c6-306e994bb615*
+2- Create connection between source(Mongo) and Destination(Snowflake), finally get the conn_id from the link path in our case is *a1a4d9a8-3315-479b-84c6-306e994bb615*
 
 ![App Screenshot](https://github.com/khalilchaouali/data_engineering_modern_project/blob/main/image/airbyte_interface.png)
 
-3- Go to http://localhost:8080/ set in variable section the conn_id [here](http://127.0.0.1:8080/variable/list/).
+```bash
+  echo "Access Airbyte at http://localhost:8000 and set up a connection."
+  echo "Enter your Airbyte connection ID: "
+  read connection_id
+  # Set connection ID for DAG.
+  docker-compose -f docker-compose-airflow.yaml --env-file ./.env.airflow run airflow-webserver airflow variables set 'AIRBYTE_CONNECTION_ID' "$connection_id"
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+3- Go to  [http://127.0.0.1:8080/variable/list/](http://127.0.0.1:8080/variable/list/) to check our variable
 
-4- Set connection with snowflake using in the admin tab [here](http://127.0.0.1:8080/connection/list/)
+![App Screenshot](https://github.com/khalilchaouali/blob/main/image/variableList.png)
+
+4- gto to this link  [http://127.0.0.1:8080/connection/list/](http://127.0.0.1:8080/connection/list/) to check our connection with snowflake
+![App Screenshot](https://github.com/khalilchaouali/blob/main/image/connectionList.png)
 
 5- trigger your task manualy to see you result with the scudeling but it's scheduled @daily in our work. besides, monitor your jobs status.
 
