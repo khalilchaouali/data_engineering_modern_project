@@ -28,6 +28,8 @@ def format_date(date):
 
 def extract_data_source(ti, date):
     try:
+        # Open Paris Data consuming
+
         locale.setlocale(locale.LC_TIME, '')
         print(date)
         path = elt_config["URL_SOURCE"]
@@ -37,6 +39,9 @@ def extract_data_source(ti, date):
         data = requests.get(path, params=params, verify=False).json()
         if data == {"error": "Unknown dataset:"+params["dataset"]}:
             raise exceptions.AirflowNotFoundException("data not found for this dataset_id")
+
+        # Airflow code
+
         ti.xcom_push(key='data',
                      value=data)
     except BaseException as err:
@@ -52,10 +57,19 @@ def load_raw_data(ti, date):
         except Exception as err:
             print("MongoDB connexion failed. " + str(err))
             raise err
+
+        # Airflow code
+
         school_data = ti.xcom_pull(key='data', task_ids='extract_data_source')
+
+        #Injecting RawData to School database
+
         document_count_before_updating = db.schoolRawData.count_documents({})
         db.schoolRawData.update_one({"records": school_data["records"]}, {"$set": school_data}, upsert=True)
         existance_status =db.schoolRawData.count_documents({}) > document_count_before_updating
+
+        # Airflow code
+
         ti.xcom_push(key='existance_status',
                      value=existance_status)
         ti.xcom_push(key='school_data',
@@ -74,7 +88,12 @@ def transform_load_records_data(ti, date):
         except Exception as err:
             print("MongoDB connexion failed. " + str(err))
             raise err
+
+        # Airflow code
+
         school_data = ti.xcom_pull(key='school_data', task_ids='load_raw_data')
+
+        # Transforming raw data into mongo collections
         print(school_data["records"])
         existance_status = ti.xcom_pull(key='existance_status', task_ids='load_raw_data')
         if existance_status:
