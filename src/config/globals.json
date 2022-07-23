@@ -7,15 +7,6 @@
         "mongo_username": "admin",
         "mongo_auth_source": "admin"
     },
-    "snowflake_credentials": {
-        "user_login_name": "",
-        "password": "",
-        "account_identifier":"",
-        "database_name": "",
-        "schema_name": "",
-        "warehouse_name": "",
-        "role_name": ""
-    },
     "airflow_config": {
         "version": "V0.1.0.",
         "timeZone": "Africa/Tunis",

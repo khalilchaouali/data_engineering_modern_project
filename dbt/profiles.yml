@@ -8,7 +8,7 @@ my-snowflake-db:
       # User/password auth
       user: AIRBYTE_USER
       password: password
-
+      # Snowflake connection detail
       role: AIRBYTE_ROLE
       database: AIRBYTE_DATABASE
       warehouse: AIRBYTE_WAREHOUSE

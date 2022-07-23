@@ -16,6 +16,33 @@ with DAG(dag_id='trigger_airbyte_dbt_job',
          start_date=days_ago(1),
          render_template_as_native_obj=True
          ) as dag:
+
+    # This task is responsible for extracting data from source to mongo
+
+    extract_data_source = PythonOperator(
+        task_id='extract_data_source',
+        python_callable=extract_data_source,
+        op_kwargs={"date": "{{execution_date}}"},
+    )
+
+    # This task is responsible for load raw data to mongo
+
+    load_raw_data = PythonOperator(
+        task_id='load_raw_data',
+        python_callable=load_raw_data,
+        op_kwargs={"date": parse_execution_date},
+    )
+
+    # This task is responsible for extracting and transforming from raw collection to others
+
+    transform_load_records_data = PythonOperator(
+        task_id='transform_load_records_data',
+        python_callable=transform_load_records_data,
+        op_kwargs={"date": parse_execution_date},
+    )
+
+    # This task is responsible for gathering data from mongo and send it to snowflake
+
     airbyte_sync = AirbyteTriggerSyncOperator(
         task_id='Update_snowflake_database',
         airbyte_conn_id='Update_snowflake_database',
@@ -24,29 +51,16 @@ with DAG(dag_id='trigger_airbyte_dbt_job',
         timeout=3600,
         wait_seconds=3
     )
-    extract_data_source = PythonOperator(
-        task_id='extract_data_source',
-        python_callable=extract_data_source,
-        op_kwargs={"date": "{{execution_date}}"},
-    )
 
-    load_raw_data = PythonOperator(
-        task_id='load_raw_data',
-        python_callable=load_raw_data,
-        op_kwargs={"date": parse_execution_date},
-    )
-
-    transform_load_records_data = PythonOperator(
-        task_id='transform_load_records_data',
-        python_callable=transform_load_records_data,
-        op_kwargs={"date": parse_execution_date},
-    )
+    # This task responsible for checking if the data well loaded in snowflake
 
     airbyte_sensor = AirbyteJobSensor(
         task_id='airbyte_sensor_money_json_example',
         airbyte_conn_id='Update_snowflake_database',
         airbyte_job_id=airbyte_sync.output
     )
+
+    # This task responsible for build a data warehouse
 
     increment_DW_data = BashOperator(
         task_id="incriment_DW_data",
