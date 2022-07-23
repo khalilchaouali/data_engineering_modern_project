@@ -242,7 +242,7 @@ Let's start:
   read connection_id
   # Set connection ID for DAG.
   docker-compose -f docker-compose-airflow.yaml --env-file ./.env.airflow run airflow-webserver airflow variables set 'AIRBYTE_CONNECTION_ID' "$connection_id"
-
+```
 3- Go to  [http://127.0.0.1:8080/variable/list/](http://127.0.0.1:8080/variable/list/) to check our variable
 
 ![App Screenshot](https://github.com/khalilchaouali/blob/main/image/variableList.png)
